@@ -8,6 +8,8 @@ import (
 	"net/http"
 	"os"
 
+	order "service/internal/order"
+
 	"github.com/gorilla/mux"
 	_ "github.com/lib/pq"
 	stan "github.com/nats-io/stan.go"
@@ -67,16 +69,12 @@ func main() {
 	defer nc.Close()
 	log.Println("INFO nats: Successfully conected to nats-striaming")
 
-	// Publish a message
-	message := "Hello, NATS Streaming!"
-	err = nc.Publish(subject, []byte(message))
-	if err != nil {
-		log.Fatalf("Error publishing message: %v", err)
-	}
-	fmt.Printf("INFO nats: Publish -> %s\n", message)
-
 	sub, err := nc.Subscribe(subject, func(msg *stan.Msg) {
-		fmt.Printf("INFO nats: Received: %s\n", string(msg.Data))
+		newOrder := order.OrderDTO{}
+		if err := json.Unmarshal(msg.Data, &newOrder); err != nil {
+			log.Fatal(err)
+		}
+		fmt.Printf("INFO nats: Received order %s\n", newOrder.OrderUID)
 	})
 	if err != nil {
 		log.Fatalf("Error subscribing to channel: %v", err)
