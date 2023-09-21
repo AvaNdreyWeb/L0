@@ -13,18 +13,30 @@ services:
       - ./db-init:/docker-entrypoint-initdb.d
     networks:
       - service-net
+    
+  nats:
+    image: nats-streaming:latest
+    ports:
+      - "4222:4222"
+    environment:
+      - STAN_CLUSTER_ID=order-cluster
+    networks:
+      - service-net
 
-  go-service:
+  service:
     environment:
       DB_NAME: ${DB_NAME}
       DB_USER: ${DB_USER}
       DB_PASS: ${DB_PASS}
       DB_HOST: ${DB_HOST}
       DB_PORT: ${DB_PORT}
+      NATS_HOST: ${NATS_HOST}
+      NATS_PORT: ${NATS_PORT}
     build:
       context: ./service
     depends_on:
       - postgres
+      - nats
     networks:
       - service-net
     ports:
