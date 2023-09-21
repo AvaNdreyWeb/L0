@@ -42,6 +42,19 @@ services:
     ports:
       - "8080:8080"
 
+  sender:
+    environment:
+      NATS_HOST: ${NATS_HOST}
+      NATS_PORT: ${NATS_PORT}
+    build:
+      context: ./sender
+    depends_on:
+      - nats
+    networks:
+      - service-net
+    ports:
+      - "8081:8081"
+
 networks:
   service-net:
 

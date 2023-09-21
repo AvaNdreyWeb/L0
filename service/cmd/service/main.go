@@ -56,6 +56,7 @@ func main() {
 		w.Write(res)
 	}).Methods("GET")
 	router.Use(mux.CORSMethodMiddleware(router))
+
 	natsHost := os.Getenv("NATS_HOST")
 	natsPort := os.Getenv("NATS_PORT")
 	natsURI := fmt.Sprintf("nats://%s:%s", natsHost, natsPort)
