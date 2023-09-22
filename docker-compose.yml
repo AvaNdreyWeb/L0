@@ -13,6 +13,10 @@ services:
       - ./db-init:/docker-entrypoint-initdb.d
     networks:
       - service-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      retries: 5
     
   nats:
     image: nats-streaming:latest
@@ -35,8 +39,10 @@ services:
     build:
       context: ./service
     depends_on:
-      - postgres
-      - nats
+      postgres:
+        condition: service_healthy
+      nats:
+        condition: service_started
     networks:
       - service-net
     ports:
@@ -49,7 +55,10 @@ services:
     build:
       context: ./sender
     depends_on:
-      - nats
+      service:
+        condition: service_started
+      nats:
+        condition: service_started
     networks:
       - service-net
     ports:

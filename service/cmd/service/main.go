@@ -22,9 +22,11 @@ type DataJSON struct {
 }
 
 const (
-	clientID  = "reciver"
-	clusterID = "test-cluster"
-	subject   = "order-channel"
+	clientID    = "reciver"
+	clusterID   = "test-cluster"
+	subject     = "order-channel"
+	queue       = "order-queue"
+	durableName = "order-durable"
 )
 
 var cache = make(map[string]order.OrderDTO)
@@ -111,8 +113,7 @@ func main() {
 	}
 	defer nc.Close()
 	log.Println("INFO nats: Successfully conected to nats-striaming")
-
-	sub, err := nc.Subscribe(subject, func(msg *stan.Msg) {
+	sub, err := nc.QueueSubscribe(subject, queue, func(msg *stan.Msg) {
 		newOrder := order.OrderDTO{}
 		if err := json.Unmarshal(msg.Data, &newOrder); err != nil {
 			log.Fatal(err)
@@ -129,7 +130,7 @@ func main() {
 		}
 
 		fmt.Printf("INFO nats: Received order %s\n", newOrder.OrderUID)
-	})
+	}, stan.DurableName(durableName))
 	if err != nil {
 		log.Fatalf("Error subscribing to channel: %v", err)
 	}
