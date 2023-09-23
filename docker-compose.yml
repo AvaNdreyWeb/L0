@@ -22,8 +22,6 @@ services:
     image: nats-streaming:latest
     ports:
       - "4222:4222"
-    environment:
-      - STAN_CLUSTER_ID=order-cluster
     networks:
       - service-net
 
@@ -36,6 +34,13 @@ services:
       DB_PORT: ${DB_PORT}
       NATS_HOST: ${NATS_HOST}
       NATS_PORT: ${NATS_PORT}
+      NATS_CLIENT: ${NATS_CLIENT}
+      NATS_CLUSTER: ${NATS_CLUSTER}
+      NATS_CHANNEL: ${NATS_CHANNEL}
+      NATS_QUEUE: ${NATS_QUEUE}
+      NATS_DURABLE: ${NATS_DURABLE}
+      SERVER_HOST: ${SERVER_HOST}
+      SERVER_PORT: ${SERVER_PORT}
     build:
       context: ./service
     depends_on:
