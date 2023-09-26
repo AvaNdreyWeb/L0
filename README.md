@@ -1,5 +1,5 @@
 # L0
-** Установка и запуск
+**Установка и запуск**
 ```
 git clone https://github.com/AvaNdreyWeb/L0.git
 cd L0
